@@ -13,14 +13,14 @@ public class Cell {
 
 	public Cell(ArrayList<Integer> possibilities, int index) {
 		Toolbox box = new Toolbox();
-		this.possibilities = box.clone(possibilities);
+		this.possibilities = box.cloneInteger(possibilities);
 		this.fixed = false;
 		this.index = index;
 	}
 	
 	public Cell(ArrayList<Integer> possibilities, int row, int col) {
 		Toolbox box = new Toolbox();
-		this.possibilities = box.clone(possibilities);
+		this.possibilities = box.cloneInteger(possibilities);
 		this.fixed = false;
 		this.index = (9 * row) + col;
 	}

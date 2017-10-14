@@ -38,6 +38,9 @@ public class Solver {
 
 	public static Board solve(Board b) {
 		// base cases
+		// TODO currently, only can be one or the other (will never get to
+		// recursive call) -- need to revise isSolution() and isInconceivable()
+		// to consider non-fixed values
 		if (b.isInconceivable()) {
 			b.printWithUnknowns();
 			return null;
@@ -48,15 +51,14 @@ public class Solver {
 		// recursively build tree
 		// 1. select cell with least number of possibilities + most filled
 		// row/col/subgrid
-		// 2. try each number of possibilities by adding them to branch of recursive tree
-		
+		// 2. try each number of possibilities by adding them to branch of
+		// recursive tree
+
 		Cell c = b.findBestMove();
-		int count = -1;
 		for (Integer i : c.possibilities) {
-			count++;
-			return solve(b.clone(c, c.possibilities.get(count)));
+			return solve(b.clone(c, c.possibilities.indexOf(i)));
 		}
-		
+
 		return null;
 	}
 }

@@ -39,6 +39,11 @@ public class Board {
 		}
 	}
 
+	public Board(ArrayList<Cell> grid) {
+		Toolbox box = new Toolbox();
+		this.grid = box.cloneCell(grid);
+	}
+	
 	// debugged
 	public void balance(ArrayList<Cell> temp) {
 		boolean val;
@@ -61,7 +66,11 @@ public class Board {
 		}
 	}
 
-	public Board clone(Board b) {
+	// TODO
+	public Board clone(Cell c, int index) {
+		Board b = new Board(this.grid);
+		b.grid.get(c.index).possibilities.clear();
+		b.grid.get(c.index).possibilities.add(new Integer(index));
 		return null;
 	}
 
@@ -183,6 +192,7 @@ public class Board {
 		return validRows() && validCols() && validSubgrids();
 	}
 
+	// TODO
 	public Cell findBestMove() {
 		ArrayList<Cell> potential = new ArrayList<Cell>();
 		int min = 9, newMin;
