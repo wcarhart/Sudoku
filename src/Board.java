@@ -43,7 +43,7 @@ public class Board {
 		Toolbox box = new Toolbox();
 		this.grid = box.cloneCell(grid);
 	}
-	
+
 	// debugged
 	public void balance(ArrayList<Cell> temp) {
 		boolean val;
@@ -66,7 +66,7 @@ public class Board {
 		}
 	}
 
-	// TODO
+	// TODO: debug this method
 	public Board clone(Cell c, int index) {
 		Board b = new Board(this.grid);
 		b.grid.get(c.index).possibilities.clear();
@@ -74,12 +74,13 @@ public class Board {
 		return null;
 	}
 
-	// debugged
+	// TODO: debug this method
 	public boolean isInconceivable() {
 		return !validRows() || !validCols() || !validSubgrids();
 	}
 
 	// debugged
+	// TODO: currently only works if each cell's possibility list is of size one
 	public boolean validRows() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		Cell c;
@@ -99,6 +100,7 @@ public class Board {
 	}
 
 	// debugged
+	// TODO: currently only works if each cell's possibility list is of size one
 	public boolean validCols() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		Cell c;
@@ -118,6 +120,7 @@ public class Board {
 	}
 
 	// debugged
+	// TODO: currently only works if each cell's possibility list is of size one
 	public boolean validSubgrids() {
 		ArrayList<ArrayList<Integer>> list = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < 9; i++) {
@@ -187,16 +190,16 @@ public class Board {
 		return true;
 	}
 
-	// debugged
+	// TODO: debug this method
 	public boolean isSolution() {
 		return validRows() && validCols() && validSubgrids();
 	}
 
-	// TODO
+	// TODO: finish tie-breaker heuristic
 	public Cell findBestMove() {
 		ArrayList<Cell> potential = new ArrayList<Cell>();
 		int min = 9, newMin;
-		
+
 		// two step selection process
 		// step 1: smallest of possibilities lists
 		for (Cell c : this.grid) {
@@ -209,15 +212,16 @@ public class Board {
 				potential.add(c);
 			}
 		}
-		
+
 		// step 2: (tie-breaker) most known in subgrid/row/col
 		if (potential.size() > 1) {
-			// TODO
+			// check subgrid
+
 		}
-		
+
 		return potential.get(0);
 	}
-	
+
 	// debugged
 	public void update() {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
@@ -368,15 +372,24 @@ public class Board {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
 			count++;
-			System.out.print((this.grid.get(i).possibilities.size() == 1) ? (this.grid.get(i).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+1).possibilities.size() == 1) ? (this.grid.get(i+1).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+2).possibilities.size() == 1) ? (this.grid.get(i+2).possibilities.get(0) + " | ") : "* | ");
-			System.out.print((this.grid.get(i+3).possibilities.size() == 1) ? (this.grid.get(i+3).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+4).possibilities.size() == 1) ? (this.grid.get(i+4).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+5).possibilities.size() == 1) ? (this.grid.get(i+5).possibilities.get(0) + " | ") : "* | ");
-			System.out.print((this.grid.get(i+6).possibilities.size() == 1) ? (this.grid.get(i+6).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+7).possibilities.size() == 1) ? (this.grid.get(i+7).possibilities.get(0) + " ") : "* ");
-			System.out.print((this.grid.get(i+8).possibilities.size() == 1) ? (this.grid.get(i+8).possibilities.get(0)) : "*");
+			System.out.print((this.grid.get(i).possibilities.size() == 1)
+					? (this.grid.get(i).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 1).possibilities.size() == 1)
+					? (this.grid.get(i + 1).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 2).possibilities.size() == 1)
+					? (this.grid.get(i + 2).possibilities.get(0) + " | ") : "* | ");
+			System.out.print((this.grid.get(i + 3).possibilities.size() == 1)
+					? (this.grid.get(i + 3).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 4).possibilities.size() == 1)
+					? (this.grid.get(i + 4).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 5).possibilities.size() == 1)
+					? (this.grid.get(i + 5).possibilities.get(0) + " | ") : "* | ");
+			System.out.print((this.grid.get(i + 6).possibilities.size() == 1)
+					? (this.grid.get(i + 6).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 7).possibilities.size() == 1)
+					? (this.grid.get(i + 7).possibilities.get(0) + " ") : "* ");
+			System.out.print((this.grid.get(i + 8).possibilities.size() == 1)
+					? (this.grid.get(i + 8).possibilities.get(0)) : "*");
 			if (count % 3 == 0 && count < 7) {
 				System.out.print("\n---------------------\n");
 			} else {

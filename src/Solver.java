@@ -45,6 +45,7 @@ public class Solver {
 			b.printWithUnknowns();
 			return null;
 		}
+		// TODO debug
 		if (b.isSolution()) {
 			return b;
 		}
@@ -54,9 +55,16 @@ public class Solver {
 		// 2. try each number of possibilities by adding them to branch of
 		// recursive tree
 
+		Board copy, solution;
 		Cell c = b.findBestMove();
 		for (Integer i : c.possibilities) {
-			return solve(b.clone(c, c.possibilities.indexOf(i)));
+			copy = b.clone(c, c.possibilities.indexOf(i));
+			copy.update();
+			solution = solve(copy);
+			if (solution != null) {
+				return solution;
+			}
+			// return solve(b.clone(c, c.possibilities.indexOf(i)));
 		}
 
 		return null;
