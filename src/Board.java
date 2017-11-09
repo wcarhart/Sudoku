@@ -9,11 +9,19 @@ import java.util.StringTokenizer;
 
 public class Board {
 	protected ArrayList<Cell> grid;
-	//private int debug = 0;
 
 	// debugged
 	public Board(String filename) {
-		this.grid = new ArrayList<Cell>();
+		this.grid = new ArrayList<Cell>(81);
+		ArrayList<Integer> possibilities = new ArrayList<>();
+		for (int j = 0; j < 9; j++) {
+			possibilities.add(new Integer(j + 1));
+		}
+		for (int i = 0; i < 81; i++) {
+			this.grid.add(new Cell(possibilities, i));
+		}
+		
+		// read in initial values from file
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(filename));
@@ -27,7 +35,9 @@ public class Board {
 				val = Integer.parseInt(st.nextToken());
 				temp.add(new Cell(true, val, row - 1, col - 1));
 			}
-			balance(temp);
+			for (Cell c : temp) {
+				this.update(c, c.possibilities.get(0));
+			}
 		} catch (IOException e) {
 			System.err.println("I/O error when reading from " + filename);
 			System.exit(1);
@@ -45,27 +55,6 @@ public class Board {
 		this.grid = box.cloneCell(grid);
 	}
 
-	// debugged
-	public void balance(ArrayList<Cell> temp) {
-		boolean val;
-		for (int i = 0; i < 81; i++) {
-			val = false;
-			for (Cell c : temp) {
-				if (c.index == i) {
-					this.grid.add(c);
-					val = true;
-					break;
-				}
-			}
-			if (!val) {
-				ArrayList<Integer> possibilities = new ArrayList<Integer>();
-				for (int j = 0; j < 9; j++) {
-					possibilities.add(new Integer(j + 1));
-				}
-				this.grid.add(new Cell(possibilities, i));
-			}
-		}
-	}
 
 	// TODO: debug this method
 	public Board clone() {
@@ -84,7 +73,7 @@ public class Board {
 	}
 
 	// debugged
-	// TODO: currently only works if each cell's possibility list is of size one
+	// TODO: is this needed?
 	public boolean validRows() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		Cell c;
@@ -104,7 +93,7 @@ public class Board {
 	}
 
 	// debugged
-	// TODO: currently only works if each cell's possibility list is of size one
+	// TODO: is this needed?
 	public boolean validCols() {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		Cell c;
@@ -124,7 +113,7 @@ public class Board {
 	}
 
 	// debugged
-	// TODO: currently only works if each cell's possibility list is of size one
+	// TODO: is this needed?
 	public boolean validSubgrids() {
 		ArrayList<ArrayList<Integer>> list = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < 9; i++) {
@@ -277,49 +266,6 @@ public class Board {
 		}
 	}
 	
-	// old implementation
-//	public void updateOLD(boolean update, Cell cell, int index) {
-//		if (update) {
-//			this.grid.get(cell.index).possibilities.clear();
-//			this.grid.get(cell.index).possibilities.add(new Integer(index));
-//		}
-//		ArrayList<Integer> temp = new ArrayList<Integer>();
-//		for (Cell c : this.grid) {
-//			boolean continueCondition = true;
-//			while (continueCondition) {
-//				continueCondition = false;
-//				if (c.fixed || c.possibilities.size() == 1) {
-//					temp.add(c.possibilities.get(0));
-//				}
-//				if (removeFromCol(c, temp)) {
-////					if (update) {
-////						System.out.println("Cell: " + c.index);
-////						System.out.println("Time: " + debug);
-////						printWithUnknowns();
-////					}
-//					continueCondition = true;
-//				}
-//				if (removeFromRow(c, temp)) {
-////					if (update) {
-////						System.out.println(c.index);
-////						printWithUnknowns();
-////					}
-//					continueCondition = true;
-//				}
-//				if (removeFromSubgrid(c, temp)) {
-////					if (update) {
-////						System.out.println(c.index);
-////						printWithUnknowns();
-////					}
-//					continueCondition = true;
-//				}
-//				temp = new ArrayList<Integer>();
-//				//debug++;
-//			}
-//		}
-//		//printWithUnknowns();
-//	}
-	
 	// TODO: return a list of cells that were changed
 	// TODO: second parameter should be a value, not a list
 	public ArrayList<Cell> removeFromCol(Cell c, int value) {
@@ -328,7 +274,7 @@ public class Board {
 		for (int i = (c.index % 9); i < 81; i += 9) {
 			if (i != c.index) {
 				if ((temp = this.grid.get(i)).possibilities.contains(value)) {
-					temp.possibilities.remove(value);
+					temp.possibilities.remove(Integer.valueOf(value));
 					if (temp.possibilities.size() == 1) {
 						toReturn.add(temp);
 					}
@@ -337,21 +283,6 @@ public class Board {
 		}
 		return toReturn;
 	}
-
-//	public boolean removeFromCol(Cell c, ArrayList<Integer> list) {
-//		boolean toReturn = false;
-//		for (int i = (c.index % 9); i < 81; i += 9) {
-//			if (i != c.index) {
-//				for (Integer k : list) {
-//					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
-//						this.grid.get(i).possibilities.remove(k);
-//						toReturn = true;
-//					}
-//				}
-//			}
-//		}
-//		return toReturn;
-//	}
 
 	// TODO: return a list of cells that were changed
 	// TODO: second parameter should be a value, not a list
@@ -361,7 +292,7 @@ public class Board {
 		for (int i = ((int) (c.index / 9)) * 9; i < (((int) (c.index / 9)) * 9) + 9; i++) {
 			if (i != c.index) {
 				if ((temp = this.grid.get(i)).possibilities.contains(value)) {
-					temp.possibilities.remove(value);
+					temp.possibilities.remove(Integer.valueOf(value));
 					if (temp.possibilities.size() == 1) {
 						toReturn.add(temp);
 					}
@@ -371,21 +302,6 @@ public class Board {
 		
 		return toReturn;
 	}
-	
-//	public boolean removeFromRow(Cell c, ArrayList<Integer> list) {
-//		boolean toReturn = false;
-//		for (int i = ((int) (c.index / 9)) * 9; i < (((int) (c.index / 9)) * 9) + 9; i++) {
-//			if (i != c.index) {
-//				for (Integer k : list) {
-//					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
-//						this.grid.get(i).possibilities.remove(k);
-//						toReturn = true;
-//					}
-//				}
-//			}
-//		}
-//		return toReturn;
-//	}
 
 	// TODO: return a list of cells that were changed
 	// TODO: second parameter should be a value, not a list
@@ -399,7 +315,7 @@ public class Board {
 				int counter = i + (j * 9);
 				if (counter != c.index) {
 					if ((temp = this.grid.get(counter)).possibilities.contains(value)){
-						temp.possibilities.remove(value);
+						temp.possibilities.remove(Integer.valueOf(value));
 						if (temp.possibilities.size() == 1) {
 							toReturn.add(temp);
 						}
@@ -410,25 +326,6 @@ public class Board {
 		
 		return toReturn;
 	}
-	
-//	public boolean removeFromSubgrid(Cell c, ArrayList<Integer> list) {
-//		boolean toReturn = false;
-//		int index = findSubgrid(c.index);
-//		for (int i = index; i < index + 3; i++) {
-//			for (int j = 0; j < 3; j++) {
-//				int counter = i + (j * 9);
-//				if (counter != c.index) {
-//					for (Integer k : list) {
-//						if (this.grid.get(counter).possibilities.contains(k) && !this.grid.get(counter).fixed) {
-//							this.grid.get(counter).possibilities.remove(k);
-//							toReturn = true;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		return toReturn;
-//	}
 
 	// debugged
 	public int findSubgrid(int index) {

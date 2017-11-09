@@ -24,7 +24,7 @@ public class Solver {
 		// create new game and solve
 		Board board = new Board(filename);
 		//board.update(false, null, 0);
-		//board.printVerbose();
+		board.printVerbose();
 		board = solve(board);
 		if (board != null) {
 			board.printWithUnknowns();
