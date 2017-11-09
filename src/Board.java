@@ -67,16 +67,19 @@ public class Board {
 	}
 
 	// TODO: debug this method
-	public Board clone(Cell c, int index) {
-		Board b = new Board(this.grid);
-		b.grid.get(c.index).possibilities.clear();
-		b.grid.get(c.index).possibilities.add(new Integer(index));
-		return null;
+	public Board clone() {
+		return new Board(this.grid);
 	}
 
-	// TODO: debug this method
+	// TODO: debug this methodS
 	public boolean isInconceivable() {
-		return !validRows() || !validCols() || !validSubgrids();
+		boolean toReturn = false;
+		for (int i = 0; i < 81; i++) {
+			if (this.grid.get(i).possibilities.size() == 0) {
+				toReturn = true;
+			}
+		}
+		return toReturn;
 	}
 
 	// debugged
@@ -192,7 +195,14 @@ public class Board {
 
 	// TODO: debug this method
 	public boolean isSolution() {
-		return validRows() && validCols() && validSubgrids();
+		boolean toReturn = true;
+		for (int i = 0; i < 81; i++) {
+			if (this.grid.get(i).possibilities.size() != 1) {
+				toReturn = false;
+				break;
+			}
+		}
+		return toReturn;
 	}
 
 	// TODO: finish tie-breaker heuristic
@@ -223,7 +233,11 @@ public class Board {
 	}
 
 	// debugged
-	public void update() {
+	public void update(boolean update, Cell cell, int index) {
+		if (update) {
+			this.grid.get(cell.index).possibilities.clear();
+			this.grid.get(cell.index).possibilities.add(new Integer(index));
+		}
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 		for (Cell c : this.grid) {
 			boolean continueCondition = true;

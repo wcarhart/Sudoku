@@ -24,7 +24,7 @@ public class Solver {
 
 		// create new game and solve
 		Board board = new Board(filename);
-		board.update();
+		board.update(false, null, 0);
 		board = solve(board);
 		if (board != null) {
 			board.printWithUnknowns();
@@ -58,8 +58,9 @@ public class Solver {
 		Board copy, solution;
 		Cell c = b.findBestMove();
 		for (Integer i : c.possibilities) {
-			copy = b.clone(c, c.possibilities.indexOf(i));
-			copy.update();
+			copy = b.clone();
+			// TODO: instead of setting value in clone(), do it in update(), or additional method
+			copy.update(true, c, c.possibilities.indexOf(i));
 			solution = solve(copy);
 			if (solution != null) {
 				return solution;
