@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 public class Board {
 	protected ArrayList<Cell> grid;
+	//private int debug = 0;
 
 	// debugged
 	public Board(String filename) {
@@ -212,8 +213,9 @@ public class Board {
 
 		// two step selection process
 		// step 1: smallest of possibilities lists
+		// TODO: should we be able to branch on cells with possibilities of size 1? I think no --> ask Dr. Glick
 		for (Cell c : this.grid) {
-			if ((newMin = c.possibilities.size()) < min) {
+			if ((newMin = c.possibilities.size()) < min && newMin > 1) {
 				min = newMin;
 			}
 		}
@@ -243,21 +245,36 @@ public class Board {
 			boolean continueCondition = true;
 			while (continueCondition) {
 				continueCondition = false;
-				if (c.fixed) {
+				if (c.fixed || c.possibilities.size() == 1) {
 					temp.add(c.possibilities.get(0));
 				}
 				if (removeFromCol(c, temp)) {
+//					if (update) {
+//						System.out.println("Cell: " + c.index);
+//						System.out.println("Time: " + debug);
+//						printWithUnknowns();
+//					}
 					continueCondition = true;
 				}
 				if (removeFromRow(c, temp)) {
+//					if (update) {
+//						System.out.println(c.index);
+//						printWithUnknowns();
+//					}
 					continueCondition = true;
 				}
 				if (removeFromSubgrid(c, temp)) {
+//					if (update) {
+//						System.out.println(c.index);
+//						printWithUnknowns();
+//					}
 					continueCondition = true;
 				}
 				temp = new ArrayList<Integer>();
+				//debug++;
 			}
 		}
+		//printWithUnknowns();
 	}
 
 	// debugged

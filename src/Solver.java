@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Solver {
 	public static void main(String[] args) {
-		// variables
 		String filename = null;
 
 		// parsing user input
@@ -25,6 +24,7 @@ public class Solver {
 		// create new game and solve
 		Board board = new Board(filename);
 		board.update(false, null, 0);
+		//board.printVerbose();
 		board = solve(board);
 		if (board != null) {
 			board.printWithUnknowns();
@@ -59,13 +59,12 @@ public class Solver {
 		Cell c = b.findBestMove();
 		for (Integer i : c.possibilities) {
 			copy = b.clone();
-			// TODO: instead of setting value in clone(), do it in update(), or additional method
-			copy.update(true, c, c.possibilities.indexOf(i));
+			//copy.update(true, c, c.possibilities.indexOf(i));
+			copy.update(true, c, i.intValue());
 			solution = solve(copy);
 			if (solution != null) {
 				return solution;
 			}
-			// return solve(b.clone(c, c.possibilities.indexOf(i)));
 		}
 
 		return null;
