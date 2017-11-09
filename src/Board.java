@@ -234,58 +234,103 @@ public class Board {
 		return potential.get(0);
 	}
 
-	// debugged
-	public void update(boolean update, Cell cell, int index) {
-		if (update) {
-			this.grid.get(cell.index).possibilities.clear();
-			this.grid.get(cell.index).possibilities.add(new Integer(index));
-		}
-		ArrayList<Integer> temp = new ArrayList<Integer>();
-		for (Cell c : this.grid) {
-			boolean continueCondition = true;
-			while (continueCondition) {
-				continueCondition = false;
-				if (c.fixed || c.possibilities.size() == 1) {
-					temp.add(c.possibilities.get(0));
+	// TODO: debug
+	// instead of going through whole board, keep track of cells who's possibility list has gone down to size 1
+	// 1. todoList = initial change
+	// 2. go through each item in todoList
+	//    a. take out of each row, col, and subgrid
+	//    b. removeCol (etc.) will return a list of Cells
+	//    c. if returned list is not empty --> add those cells on return list to todoList
+	// 3. repeat until todoList is empty
+	// TODO: need this to be called everytime we put a cell into board
+	// start with board having all possibilities, then with each initial value, call update
+	public void update(Cell cell, int value) {
+		Toolbox box = new Toolbox();
+		
+		// update new value at cell's index
+		this.grid.get(cell.index).possibilities.clear();
+		this.grid.get(cell.index).possibilities.add(new Integer(value));
+		
+		ArrayList<Cell> toBeProcessed = new ArrayList<Cell>();
+		toBeProcessed.add(cell);
+		ArrayList<Cell> changed = new ArrayList<Cell>();
+		while(!toBeProcessed.isEmpty()) {
+			cell = toBeProcessed.remove(0);
+			changed = box.cloneCell(removeFromCol(cell, cell.possibilities.get(0)));
+			if (changed.size() != 0) {
+				for (Cell c : changed) {
+					toBeProcessed.add(c);
 				}
-				if (removeFromCol(c, temp)) {
-//					if (update) {
-//						System.out.println("Cell: " + c.index);
-//						System.out.println("Time: " + debug);
-//						printWithUnknowns();
-//					}
-					continueCondition = true;
+			}
+			changed = box.cloneCell(removeFromRow(cell, cell.possibilities.get(0)));
+			if (changed.size() != 0) {
+				for (Cell c : changed) {
+					toBeProcessed.add(c);
 				}
-				if (removeFromRow(c, temp)) {
-//					if (update) {
-//						System.out.println(c.index);
-//						printWithUnknowns();
-//					}
-					continueCondition = true;
+			}
+			changed = box.cloneCell(removeFromSubgrid(cell, cell.possibilities.get(0)));
+			if (changed.size() != 0) {
+				for (Cell c : changed) {
+					toBeProcessed.add(c);
 				}
-				if (removeFromSubgrid(c, temp)) {
-//					if (update) {
-//						System.out.println(c.index);
-//						printWithUnknowns();
-//					}
-					continueCondition = true;
-				}
-				temp = new ArrayList<Integer>();
-				//debug++;
 			}
 		}
-		//printWithUnknowns();
 	}
-
-	// debugged
-	public boolean removeFromCol(Cell c, ArrayList<Integer> list) {
-		boolean toReturn = false;
+	
+	// old implementation
+//	public void updateOLD(boolean update, Cell cell, int index) {
+//		if (update) {
+//			this.grid.get(cell.index).possibilities.clear();
+//			this.grid.get(cell.index).possibilities.add(new Integer(index));
+//		}
+//		ArrayList<Integer> temp = new ArrayList<Integer>();
+//		for (Cell c : this.grid) {
+//			boolean continueCondition = true;
+//			while (continueCondition) {
+//				continueCondition = false;
+//				if (c.fixed || c.possibilities.size() == 1) {
+//					temp.add(c.possibilities.get(0));
+//				}
+//				if (removeFromCol(c, temp)) {
+////					if (update) {
+////						System.out.println("Cell: " + c.index);
+////						System.out.println("Time: " + debug);
+////						printWithUnknowns();
+////					}
+//					continueCondition = true;
+//				}
+//				if (removeFromRow(c, temp)) {
+////					if (update) {
+////						System.out.println(c.index);
+////						printWithUnknowns();
+////					}
+//					continueCondition = true;
+//				}
+//				if (removeFromSubgrid(c, temp)) {
+////					if (update) {
+////						System.out.println(c.index);
+////						printWithUnknowns();
+////					}
+//					continueCondition = true;
+//				}
+//				temp = new ArrayList<Integer>();
+//				//debug++;
+//			}
+//		}
+//		//printWithUnknowns();
+//	}
+	
+	// TODO: return a list of cells that were changed
+	// TODO: second parameter should be a value, not a list
+	public ArrayList<Cell> removeFromCol(Cell c, int value) {
+		ArrayList<Cell> toReturn = new ArrayList<Cell>();
+		Cell temp;
 		for (int i = (c.index % 9); i < 81; i += 9) {
 			if (i != c.index) {
-				for (Integer k : list) {
-					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
-						this.grid.get(i).possibilities.remove(k);
-						toReturn = true;
+				if ((temp = this.grid.get(i)).possibilities.contains(value)) {
+					temp.possibilities.remove(value);
+					if (temp.possibilities.size() == 1) {
+						toReturn.add(temp);
 					}
 				}
 			}
@@ -293,41 +338,97 @@ public class Board {
 		return toReturn;
 	}
 
-	// debugged
-	public boolean removeFromRow(Cell c, ArrayList<Integer> list) {
-		boolean toReturn = false;
+//	public boolean removeFromCol(Cell c, ArrayList<Integer> list) {
+//		boolean toReturn = false;
+//		for (int i = (c.index % 9); i < 81; i += 9) {
+//			if (i != c.index) {
+//				for (Integer k : list) {
+//					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
+//						this.grid.get(i).possibilities.remove(k);
+//						toReturn = true;
+//					}
+//				}
+//			}
+//		}
+//		return toReturn;
+//	}
+
+	// TODO: return a list of cells that were changed
+	// TODO: second parameter should be a value, not a list
+	public ArrayList<Cell> removeFromRow(Cell c, int value) {
+		ArrayList<Cell> toReturn = new ArrayList<Cell>();
+		Cell temp;
 		for (int i = ((int) (c.index / 9)) * 9; i < (((int) (c.index / 9)) * 9) + 9; i++) {
 			if (i != c.index) {
-				for (Integer k : list) {
-					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
-						this.grid.get(i).possibilities.remove(k);
-						toReturn = true;
+				if ((temp = this.grid.get(i)).possibilities.contains(value)) {
+					temp.possibilities.remove(value);
+					if (temp.possibilities.size() == 1) {
+						toReturn.add(temp);
 					}
 				}
 			}
 		}
+		
 		return toReturn;
 	}
+	
+//	public boolean removeFromRow(Cell c, ArrayList<Integer> list) {
+//		boolean toReturn = false;
+//		for (int i = ((int) (c.index / 9)) * 9; i < (((int) (c.index / 9)) * 9) + 9; i++) {
+//			if (i != c.index) {
+//				for (Integer k : list) {
+//					if (this.grid.get(i).possibilities.contains(k) && !this.grid.get(i).fixed) {
+//						this.grid.get(i).possibilities.remove(k);
+//						toReturn = true;
+//					}
+//				}
+//			}
+//		}
+//		return toReturn;
+//	}
 
-	// debugged
-	public boolean removeFromSubgrid(Cell c, ArrayList<Integer> list) {
-		boolean toReturn = false;
+	// TODO: return a list of cells that were changed
+	// TODO: second parameter should be a value, not a list
+	public ArrayList<Cell> removeFromSubgrid(Cell c, int value) {
+		ArrayList<Cell> toReturn = new ArrayList<Cell>();
+		Cell temp;
+		
 		int index = findSubgrid(c.index);
 		for (int i = index; i < index + 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int counter = i + (j * 9);
 				if (counter != c.index) {
-					for (Integer k : list) {
-						if (this.grid.get(counter).possibilities.contains(k) && !this.grid.get(counter).fixed) {
-							this.grid.get(counter).possibilities.remove(k);
-							toReturn = true;
+					if ((temp = this.grid.get(counter)).possibilities.contains(value)){
+						temp.possibilities.remove(value);
+						if (temp.possibilities.size() == 1) {
+							toReturn.add(temp);
 						}
 					}
 				}
 			}
 		}
+		
 		return toReturn;
 	}
+	
+//	public boolean removeFromSubgrid(Cell c, ArrayList<Integer> list) {
+//		boolean toReturn = false;
+//		int index = findSubgrid(c.index);
+//		for (int i = index; i < index + 3; i++) {
+//			for (int j = 0; j < 3; j++) {
+//				int counter = i + (j * 9);
+//				if (counter != c.index) {
+//					for (Integer k : list) {
+//						if (this.grid.get(counter).possibilities.contains(k) && !this.grid.get(counter).fixed) {
+//							this.grid.get(counter).possibilities.remove(k);
+//							toReturn = true;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return toReturn;
+//	}
 
 	// debugged
 	public int findSubgrid(int index) {

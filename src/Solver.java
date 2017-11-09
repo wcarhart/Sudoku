@@ -23,7 +23,7 @@ public class Solver {
 
 		// create new game and solve
 		Board board = new Board(filename);
-		board.update(false, null, 0);
+		//board.update(false, null, 0);
 		//board.printVerbose();
 		board = solve(board);
 		if (board != null) {
@@ -60,7 +60,7 @@ public class Solver {
 		for (Integer i : c.possibilities) {
 			copy = b.clone();
 			//copy.update(true, c, c.possibilities.indexOf(i));
-			copy.update(true, c, i.intValue());
+			copy.update(c, i.intValue());
 			solution = solve(copy);
 			if (solution != null) {
 				return solution;
