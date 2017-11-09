@@ -1,0 +1,2 @@
+Infeasible
+Nodes generated = 1
