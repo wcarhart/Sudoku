@@ -1,10 +1,11 @@
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Solver {
+	public static int nodes;
+
 	public static void main(String[] args) {
 		String filename = null;
+		nodes = 0;
 
 		// parsing user input
 		switch (args.length) {
@@ -23,55 +24,46 @@ public class Solver {
 			break;
 		}
 
-		// create new game and solve
+		// solve game
 		Board board = new Board(filename);
-		board = solve(board, 0);
+		board = solve(board);
 		if (board != null) {
 			board.printWithUnknowns();
+			System.out.println("Nodes generated: " + nodes);
 		} else {
 			System.err.println("Inconceivable game board");
 			System.exit(1);
 		}
 	}
 
-	public static Board solve(Board b, int depth) {
-		// base cases
-		// TODO currently, only can be one or the other (will never get to
-		// recursive call) -- need to revise isSolution() and isInconceivable()
-		// to consider non-fixed values
+	/*
+	 * Purpose: recursively solve a given board, using the following steps: 1.
+	 * Check if board is inconceivable --> if true, return null, 2. Check if
+	 * board is the solution --> if true, return the board, 3. Calculate the
+	 * next best cell on which to branch, 4. For each of the cells in the next
+	 * best move's possibilities list: a. Try each possibility, b. Percolate
+	 * updates throughout game board, c. Recursively call solve() on resulting
+	 * board
+	 * 
+	 * @param b | the board that will be solved
+	 * 
+	 * @return the solved board
+	 */
+	public static Board solve(Board b) {
 		if (b.isInconceivable()) {
-			//b.printWithUnknowns();
-			//System.out.println("Nodes generated: " + depth);
 			return null;
 		}
-		// TODO debug
 		if (b.isSolution()) {
-			//b.printWithUnknowns();
-			//System.out.println("Nodes generated: " + depth);
 			return b;
 		}
-		// recursively build tree
-		// 1. select cell with least number of possibilities + most filled
-		// row/col/subgrid
-		// 2. try each number of possibilities by adding them to branch of
-		// recursive tree
 
 		Board copy, solution;
 		Cell c = b.findBestMove();
-		//ArrayList<Integer> p = new Toolbox().cloneInteger(c.possibilities);
 		for (Integer i : c.possibilities) {
-			System.out.println("Branching on cell #" + c.index);
-			System.out.println("Cell #" + c.index + " has possibilities " + c.possibilities);
-			System.out.println("I'm branching on " + i);
-			System.out.println("I'm at depth " + depth);
-			System.out.println();
-			if (c.index == 8 && i.equals(9) && depth == 3){
-				b.printVerbose();
-			}
+			nodes++;
 			copy = b.clone();
-			System.out.println(i.intValue());
 			copy.update(c, i.intValue());
-			solution = solve(copy, depth + 1);
+			solution = solve(copy);
 			if (solution != null) {
 				return solution;
 			}

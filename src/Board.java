@@ -3,15 +3,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Board {
 	protected ArrayList<Cell> grid;
 
-	// debugged
+	/*
+	 * Purpose: construct a new board based on an input file
+	 * 
+	 * @param filename | the name of the input file
+	 * 
+	 * @return a new board constructed from the input file
+	 */
 	public Board(String filename) {
+
+		// start whole board as 81 cells with full possibilities lists
 		this.grid = new ArrayList<Cell>(81);
 		ArrayList<Integer> possibilities = new ArrayList<>();
 		for (int j = 0; j < 9; j++) {
@@ -20,8 +26,9 @@ public class Board {
 		for (int i = 0; i < 81; i++) {
 			this.grid.add(new Cell(possibilities, i));
 		}
-		
-		// read in initial values from file
+
+		// read in initial values from file, put in board and update one at
+		// a time
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(filename));
@@ -50,22 +57,40 @@ public class Board {
 		}
 	}
 
+	/*
+	 * Purpose: construct a new board from an existing grid of cells
+	 * 
+	 * @param grid | the original grid that will be cloned when creating the new
+	 * board
+	 * 
+	 * @return a new board constructed from the existing grid of cells
+	 */
 	public Board(ArrayList<Cell> grid) {
 		Toolbox box = new Toolbox();
 		this.grid = box.cloneCell(grid);
 	}
 
-	// TODO: debug this method
+	/*
+	 * Purpose: clone an existing board
+	 * 
+	 * @return a clone of an existing board
+	 */
 	public Board clone() {
 		return new Board(this.grid);
 	}
 
-	// TODO: debug this method
+	/*
+	 * Purpose: to determine if a given board is inconceivable, i.e. the game
+	 * cannot continue. We know a given board is inconceivable if any of the
+	 * possibilities lists are reduced to a size of zero.
+	 * 
+	 * @return true if the board is inconceivable, false if the board is
+	 * conceivable
+	 */
 	public boolean isInconceivable() {
 		boolean toReturn = false;
 		for (int i = 0; i < 81; i++) {
 			if (this.grid.get(i).possibilities.size() == 0) {
-				System.err.println("FOUND A MISTAKE");
 				toReturn = true;
 				break;
 			}
@@ -73,118 +98,14 @@ public class Board {
 		return toReturn;
 	}
 
-	// debugged
-	// TODO: is this needed?
-	public boolean validRows() {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		Cell c;
-		for (int i = 0; i < 81; i += 9) { // for each row
-			for (int j = 0; j < 9; j++) { // for each index in row
-				if ((c = this.grid.get(i + j)).fixed || c.possibilities.size() == 1) {
-					list.add(c.possibilities.get(0));
-				}
-			}
-			Set<Integer> set = new HashSet<Integer>(list);
-			if (set.size() < list.size()) {
-				return false;
-			}
-			list = new ArrayList<Integer>();
-		}
-		return true;
-	}
-
-	// debugged
-	// TODO: is this needed?
-	public boolean validCols() {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		Cell c;
-		for (int i = 0; i < 9; i++) {
-			for (int j = i; j < 81; j += 9) {
-				if ((c = this.grid.get(j)).fixed || c.possibilities.size() == 1) {
-					list.add(c.possibilities.get(0));
-				}
-			}
-			Set<Integer> set = new HashSet<Integer>(list);
-			if (set.size() < list.size()) {
-				return false;
-			}
-			list = new ArrayList<Integer>();
-		}
-		return true;
-	}
-
-	// debugged
-	// TODO: is this needed?
-	public boolean validSubgrids() {
-		ArrayList<ArrayList<Integer>> list = new ArrayList<ArrayList<Integer>>();
-		for (int i = 0; i < 9; i++) {
-			list.add(new ArrayList<Integer>());
-		}
-		Cell c;
-
-		for (int i = 0; i < 81; i++) {
-			c = this.grid.get(i);
-			switch (i % 9) {
-			case 0:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(0).add(c.possibilities.get(0));
-				}
-				break;
-			case 1:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(1).add(c.possibilities.get(0));
-				}
-				break;
-			case 2:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(2).add(c.possibilities.get(0));
-				}
-				break;
-			case 3:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(3).add(c.possibilities.get(0));
-				}
-				break;
-			case 4:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(4).add(c.possibilities.get(0));
-				}
-				break;
-			case 5:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(5).add(c.possibilities.get(0));
-				}
-				break;
-			case 6:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(6).add(c.possibilities.get(0));
-				}
-				break;
-			case 7:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(7).add(c.possibilities.get(0));
-				}
-				break;
-			case 8:
-				if (c.fixed || c.possibilities.size() == 1) {
-					list.get(8).add(c.possibilities.get(0));
-				}
-				break;
-			default:
-				System.err.println("ERROR: could not compute subgrid validity");
-				System.exit(1);
-			}
-		}
-		for (int i = 0; i < 9; i++) {
-			Set<Integer> set = new HashSet<Integer>(list.get(i));
-			if (set.size() < list.get(i).size()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// TODO: debug this method
+	/*
+	 * Purpose: to determine if a given board is the solution, i.e. the game has
+	 * been won. We know a given board is the solution if all the possibilities
+	 * lists have a size of one.
+	 * 
+	 * @return true if the board is the solution, false if the board is not the
+	 * solution
+	 */
 	public boolean isSolution() {
 		boolean toReturn = true;
 		for (int i = 0; i < 81; i++) {
@@ -196,14 +117,20 @@ public class Board {
 		return toReturn;
 	}
 
-	// TODO: finish tie-breaker heuristic
+	/*
+	 * Purpose: to find the next best cell on which to branch recursively.
+	 * Strategy is two-fold: (1) compile a list of all cells who have the
+	 * smallest possibilities list, and then, (2) implement a heuristic to break
+	 * ties. Current heuristic: random selection (could be improved).
+	 * 
+	 * @return the cell for the computed next best move
+	 */
 	public Cell findBestMove() {
 		ArrayList<Cell> potential = new ArrayList<Cell>();
 		int min = 9, newMin;
 
 		// two step selection process
-		// step 1: smallest of possibilities lists
-		// TODO: should we be able to branch on cells with possibilities of size 1? I think no --> ask Dr. Glick
+		// step 1: select smallest of possibilities lists
 		for (Cell c : this.grid) {
 			if ((newMin = c.possibilities.size()) < min && newMin > 1) {
 				min = newMin;
@@ -215,59 +142,60 @@ public class Board {
 			}
 		}
 
-		// step 2: (tie-breaker) most known in subgrid/row/col
-		if (potential.size() > 1) {
-			// check subgrid
-
-		}
-
-		return potential.get(0);
+		// step 2: select a potential cell randomly
+		int selection = (int) (potential.size() * Math.random());
+		return potential.get(selection);
 	}
 
-	// TODO: debug
-	// instead of going through whole board, keep track of cells who's possibility list has gone down to size 1
-	// 1. todoList = initial change
-	// 2. go through each item in todoList
-	//    a. take out of each row, col, and subgrid
-	//    b. removeCol (etc.) will return a list of Cells
-	//    c. if returned list is not empty --> add those cells on return list to todoList
-	// 3. repeat until todoList is empty
-	// TODO: need this to be called everytime we put a cell into board
-	// start with board having all possibilities, then with each initial value, call update
+	/*
+	 * Purpose: to change a specific value in the game board and then percolate
+	 * updates through. Process is as follows: 1. Create a queue of cells that
+	 * need to be processed, 2. While the queue is not empty: a. Dequeue cell at
+	 * from of queue, b. Remove that cell's value from all other cells in its
+	 * row, column, and subgrid, c. If, while removing, another cell's
+	 * possibilities list drops to size one, add that cell to the queue.
+	 * 
+	 * @param cell | the cell whose value will be changed before updates are
+	 * attempted
+	 * 
+	 * @param value | the value to which to change cell's value
+	 * 
+	 * @return void
+	 */
 	public void update(Cell cell, int value) {
 		Toolbox box = new Toolbox();
-		
+
 		// update new value at cell's index
-		//System.out.println(this.grid.get(cell.index).possibilities);
 		Cell newCell = new Cell(true, value, cell.index);
 		this.grid.set(cell.index, newCell);
-		//this.grid.get(cell.index).possibilities.clear();
-		//this.grid.get(cell.index).possibilities.add(new Integer(value));
-		//System.out.println(this.grid.get(cell.index).possibilities);
-		
+
+		// use queue of cells to be processed
 		ArrayList<Cell> toBeProcessed = new ArrayList<Cell>();
 		toBeProcessed.add(newCell);
 		ArrayList<Cell> changed = new ArrayList<Cell>();
-		while(!toBeProcessed.isEmpty()) {
+		while (!toBeProcessed.isEmpty()) {
 			cell = toBeProcessed.remove(0);
-//			System.out.print("\n");
-//			printWithUnknowns();
+
+			// check if board has become inconceivable
 			if (cell.possibilities.size() == 0) {
 				break;
 			}
-			// TODO: consider passing toBeProcessed into removeFromCol and other removes()
+
+			// remove from column, check if need to continue updates
 			changed = box.cloneCell(removeFromCol(cell, cell.possibilities.get(0)));
 			if (changed.size() != 0) {
 				for (Cell c : changed) {
 					toBeProcessed.add(c);
 				}
 			}
+			// remove from row, check if need to continue updates
 			changed = box.cloneCell(removeFromRow(cell, cell.possibilities.get(0)));
 			if (changed.size() != 0) {
 				for (Cell c : changed) {
 					toBeProcessed.add(c);
 				}
 			}
+			// remove from subgrid, check if need to continue updates
 			changed = box.cloneCell(removeFromSubgrid(cell, cell.possibilities.get(0)));
 			if (changed.size() != 0) {
 				for (Cell c : changed) {
@@ -275,13 +203,18 @@ public class Board {
 				}
 			}
 		}
-		System.out.println();
-		//printWithUnknowns();
-		printVerbose();
 	}
-	
-	// TODO: return a list of cells that were changed
-	// TODO: second parameter should be a value, not a list
+
+	/*
+	 * Purpose: to remove a specific value from a specific column
+	 * 
+	 * @param c | the cell whose column will be checked and edited
+	 * 
+	 * @param value | the value that will be removed from c's column
+	 * 
+	 * @return a list of cells whose possibilities lists were reduced to size
+	 * one during the removal process
+	 */
 	public ArrayList<Cell> removeFromCol(Cell c, int value) {
 		ArrayList<Cell> toReturn = new ArrayList<Cell>();
 		Cell temp;
@@ -298,8 +231,16 @@ public class Board {
 		return toReturn;
 	}
 
-	// TODO: return a list of cells that were changed
-	// TODO: second parameter should be a value, not a list
+	/*
+	 * Purpose: to remove a specific value from a specific row
+	 * 
+	 * @param c | the cell whose row will be checked and edited
+	 * 
+	 * @param value | the value that will be removed from c's row
+	 * 
+	 * @return a list of cells whose possibilities lists were reduced to size
+	 * one during the removal process
+	 */
 	public ArrayList<Cell> removeFromRow(Cell c, int value) {
 		ArrayList<Cell> toReturn = new ArrayList<Cell>();
 		Cell temp;
@@ -313,22 +254,30 @@ public class Board {
 				}
 			}
 		}
-		
+
 		return toReturn;
 	}
 
-	// TODO: return a list of cells that were changed
-	// TODO: second parameter should be a value, not a list
+	/*
+	 * Purpose: to remove a specific value from a specific subgrid
+	 * 
+	 * @param c | the cell whose subgrid will be checked and edited
+	 * 
+	 * @param value | the value that will be removed from c's subgrid
+	 * 
+	 * @return a list of cells whose possibilities lists were reduced to size
+	 * one during the removal process
+	 */
 	public ArrayList<Cell> removeFromSubgrid(Cell c, int value) {
 		ArrayList<Cell> toReturn = new ArrayList<Cell>();
 		Cell temp;
-		
+
 		int index = findSubgrid(c.index);
 		for (int i = index; i < index + 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int counter = i + (j * 9);
 				if (counter != c.index) {
-					if ((temp = this.grid.get(counter)).possibilities.contains(value)){
+					if ((temp = this.grid.get(counter)).possibilities.contains(value)) {
 						temp.possibilities.remove(Integer.valueOf(value));
 						if (temp.possibilities.size() == 1) {
 							toReturn.add(temp);
@@ -337,11 +286,22 @@ public class Board {
 				}
 			}
 		}
-		
+
 		return toReturn;
 	}
 
-	// debugged
+	/*
+	 * Purpose: to find specific subgrid of a given cell
+	 * 
+	 * @param index | the index of the cell whose subgrid will be returned
+	 * 
+	 * @return the index of the top-left cell in the subgrid in which the the
+	 * cell with index "index" was found
+	 * 
+	 * For example: index = 2 --> return 0 index = 10 --> return 0 index = 8 -->
+	 * return 6
+	 */
+
 	public int findSubgrid(int index) {
 		int col = index % 9;
 		int row = (int) index / 9;
@@ -388,7 +348,6 @@ public class Board {
 		return toReturn;
 	}
 
-	// debugged
 	public void printWithFirst() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
@@ -410,7 +369,6 @@ public class Board {
 		}
 	}
 
-	// debugged
 	public void printWithUnknowns() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
@@ -441,7 +399,6 @@ public class Board {
 		}
 	}
 
-	// debugged
 	public void printVerbose() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
