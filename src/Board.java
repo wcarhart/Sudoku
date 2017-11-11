@@ -271,6 +271,8 @@ public class Board {
 				}
 			}
 		}
+		System.out.println();
+		printWithUnknowns();
 	}
 	
 	// TODO: return a list of cells that were changed

@@ -25,12 +25,9 @@ public class Solver {
 
 		// create new game and solve
 		Board board = new Board(filename);
-		//board.update(false, null, 0);
 		board = solve(board, 0);
 		if (board != null) {
 			board.printWithUnknowns();
-			// board.printWithFirst();
-			// board.printVerbose();
 		} else {
 			System.err.println("Inconceivable game board");
 			System.exit(1);
