@@ -65,7 +65,11 @@ public class Solver {
 			System.out.println("I'm branching on " + i);
 			System.out.println("I'm at depth " + depth);
 			System.out.println();
+			if (c.index == 8 && i.equals(9) && depth == 3){
+				b.printVerbose();
+			}
 			copy = b.clone();
+			System.out.println(i.intValue());
 			copy.update(c, i.intValue());
 			solution = solve(copy, depth + 1);
 			if (solution != null) {

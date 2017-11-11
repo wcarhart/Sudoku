@@ -65,7 +65,9 @@ public class Board {
 		boolean toReturn = false;
 		for (int i = 0; i < 81; i++) {
 			if (this.grid.get(i).possibilities.size() == 0) {
+				System.err.println("FOUND A MISTAKE");
 				toReturn = true;
+				break;
 			}
 		}
 		return toReturn;
@@ -237,12 +239,14 @@ public class Board {
 		
 		// update new value at cell's index
 		//System.out.println(this.grid.get(cell.index).possibilities);
-		this.grid.get(cell.index).possibilities.clear();
-		this.grid.get(cell.index).possibilities.add(new Integer(value));
+		Cell newCell = new Cell(true, value, cell.index);
+		this.grid.set(cell.index, newCell);
+		//this.grid.get(cell.index).possibilities.clear();
+		//this.grid.get(cell.index).possibilities.add(new Integer(value));
 		//System.out.println(this.grid.get(cell.index).possibilities);
 		
 		ArrayList<Cell> toBeProcessed = new ArrayList<Cell>();
-		toBeProcessed.add(cell);
+		toBeProcessed.add(newCell);
 		ArrayList<Cell> changed = new ArrayList<Cell>();
 		while(!toBeProcessed.isEmpty()) {
 			cell = toBeProcessed.remove(0);
@@ -272,7 +276,8 @@ public class Board {
 			}
 		}
 		System.out.println();
-		printWithUnknowns();
+		//printWithUnknowns();
+		printVerbose();
 	}
 	
 	// TODO: return a list of cells that were changed
