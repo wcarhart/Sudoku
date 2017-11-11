@@ -15,7 +15,7 @@ public class Toolbox {
 	public ArrayList<Cell> cloneCell(ArrayList<Cell> toClone) {
 		ArrayList<Cell> toReturn = new ArrayList<Cell>(toClone.size());
 		for (Cell c : toClone) {
-			toReturn.add(c);
+			toReturn.add(new Cell(cloneInteger(c.possibilities), c.index));
 		}
 		return toReturn;
 	}

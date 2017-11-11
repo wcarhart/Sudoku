@@ -55,13 +55,12 @@ public class Board {
 		this.grid = box.cloneCell(grid);
 	}
 
-
 	// TODO: debug this method
 	public Board clone() {
 		return new Board(this.grid);
 	}
 
-	// TODO: debug this methodS
+	// TODO: debug this method
 	public boolean isInconceivable() {
 		boolean toReturn = false;
 		for (int i = 0; i < 81; i++) {
@@ -237,14 +236,22 @@ public class Board {
 		Toolbox box = new Toolbox();
 		
 		// update new value at cell's index
+		//System.out.println(this.grid.get(cell.index).possibilities);
 		this.grid.get(cell.index).possibilities.clear();
 		this.grid.get(cell.index).possibilities.add(new Integer(value));
+		//System.out.println(this.grid.get(cell.index).possibilities);
 		
 		ArrayList<Cell> toBeProcessed = new ArrayList<Cell>();
 		toBeProcessed.add(cell);
 		ArrayList<Cell> changed = new ArrayList<Cell>();
 		while(!toBeProcessed.isEmpty()) {
 			cell = toBeProcessed.remove(0);
+//			System.out.print("\n");
+//			printWithUnknowns();
+			if (cell.possibilities.size() == 0) {
+				break;
+			}
+			// TODO: consider passing toBeProcessed into removeFromCol and other removes()
 			changed = box.cloneCell(removeFromCol(cell, cell.possibilities.get(0)));
 			if (changed.size() != 0) {
 				for (Cell c : changed) {

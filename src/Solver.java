@@ -1,3 +1,5 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Solver {
@@ -24,8 +26,7 @@ public class Solver {
 		// create new game and solve
 		Board board = new Board(filename);
 		//board.update(false, null, 0);
-		board.printVerbose();
-		board = solve(board);
+		board = solve(board, 0);
 		if (board != null) {
 			board.printWithUnknowns();
 			// board.printWithFirst();
@@ -36,17 +37,20 @@ public class Solver {
 		}
 	}
 
-	public static Board solve(Board b) {
+	public static Board solve(Board b, int depth) {
 		// base cases
 		// TODO currently, only can be one or the other (will never get to
 		// recursive call) -- need to revise isSolution() and isInconceivable()
 		// to consider non-fixed values
 		if (b.isInconceivable()) {
-			b.printWithUnknowns();
+			//b.printWithUnknowns();
+			//System.out.println("Nodes generated: " + depth);
 			return null;
 		}
 		// TODO debug
 		if (b.isSolution()) {
+			//b.printWithUnknowns();
+			//System.out.println("Nodes generated: " + depth);
 			return b;
 		}
 		// recursively build tree
@@ -57,11 +61,16 @@ public class Solver {
 
 		Board copy, solution;
 		Cell c = b.findBestMove();
+		//ArrayList<Integer> p = new Toolbox().cloneInteger(c.possibilities);
 		for (Integer i : c.possibilities) {
+			System.out.println("Branching on cell #" + c.index);
+			System.out.println("Cell #" + c.index + " has possibilities " + c.possibilities);
+			System.out.println("I'm branching on " + i);
+			System.out.println("I'm at depth " + depth);
+			System.out.println();
 			copy = b.clone();
-			//copy.update(true, c, c.possibilities.indexOf(i));
 			copy.update(c, i.intValue());
-			solution = solve(copy);
+			solution = solve(copy, depth + 1);
 			if (solution != null) {
 				return solution;
 			}
