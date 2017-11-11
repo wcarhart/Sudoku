@@ -9,6 +9,17 @@ public class Board {
 	protected ArrayList<Cell> grid;
 
 	/*
+	 * Purpose: return value at a specific cell, because grid is protected
+	 * 
+	 * @param index | the index at which to grab the value
+	 * 
+	 * @return a new Integer representing the requested value
+	 */
+	public Integer getValueAt(int index) {
+		return new Integer(this.grid.get(index).possibilities.get(0));
+	}
+
+	/*
 	 * Purpose: construct a new board based on an input file
 	 * 
 	 * @param filename | the name of the input file
@@ -37,10 +48,12 @@ public class Board {
 			ArrayList<Cell> temp = new ArrayList<Cell>();
 			while ((line = br.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer(line);
-				row = Integer.parseInt(st.nextToken());
-				col = Integer.parseInt(st.nextToken());
-				val = Integer.parseInt(st.nextToken());
-				temp.add(new Cell(true, val, row - 1, col - 1));
+				if (st.hasMoreTokens()) {
+					row = Integer.parseInt(st.nextToken());
+					col = Integer.parseInt(st.nextToken());
+					val = Integer.parseInt(st.nextToken());
+					temp.add(new Cell(true, val, row - 1, col - 1));
+				}
 			}
 			for (Cell c : temp) {
 				this.update(c, c.possibilities.get(0));

@@ -1,21 +1,25 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Solver {
 	public static int nodes;
 
 	public static void main(String[] args) {
-		String filename = null;
-		nodes = 0;
+		String inputFilename = null, outputFilename = null;
+		nodes = 1;
 
 		// parsing user input
 		switch (args.length) {
 		case 0:
 			Scanner in = new Scanner(System.in);
 			System.out.println("Please enter the name of the input file for board initialization: ");
-			filename = in.next();
+			inputFilename = in.next();
 			break;
-		case 1:
-			filename = args[0];
+		case 2:
+			inputFilename = args[0];
+			outputFilename = args[1];
 			break;
 		default:
 			System.out.println("Incorrect usage");
@@ -25,13 +29,55 @@ public class Solver {
 		}
 
 		// solve game
-		Board board = new Board(filename);
+		Board board = new Board(inputFilename);
 		board = solve(board);
-		if (board != null) {
+		if (outputFilename != null) {
+			printToFile(board, outputFilename);
+		} else if (board != null) {
 			board.printWithUnknowns();
-			System.out.println("Nodes generated: " + nodes);
+			System.out.println("Node generated = " + nodes);
 		} else {
 			System.err.println("Inconceivable game board");
+			System.exit(1);
+		}
+	}
+
+	/*
+	 * Purpose: write output to a file
+	 * 
+	 * @param b | the board to be printed
+	 * 
+	 * @param filename | the name of the output file
+	 * 
+	 * @return void
+	 */
+	public static void printToFile(Board b, String filename) {
+		FileWriter fw;
+		PrintWriter pw;
+
+		try {
+			// clear file
+			fw = new FileWriter(filename, false);
+			pw = new PrintWriter(fw, false);
+
+			if (b == null) {
+				pw.println("Infeasible");
+			} else {
+				for (int i = 0; i < 81; i++) {
+					pw.print(b.getValueAt(i).intValue() + " ");
+					if ((i + 1) % 9 == 0) {
+						pw.println();
+					}
+				}
+			}
+			
+			pw.println("Nodes generated = " + nodes);
+
+			pw.flush();
+			pw.close();
+			fw.close();
+		} catch (IOException e) {
+			System.err.println("Error in I/O when writing output to " + filename);
 			System.exit(1);
 		}
 	}
