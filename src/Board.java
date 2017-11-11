@@ -314,7 +314,6 @@ public class Board {
 	 * For example: index = 2 --> return 0 index = 10 --> return 0 index = 8 -->
 	 * return 6
 	 */
-
 	public int findSubgrid(int index) {
 		int col = index % 9;
 		int row = (int) index / 9;
@@ -361,6 +360,11 @@ public class Board {
 		return toReturn;
 	}
 
+	/*
+	 * Purpose: print board with first item in each cell's possibilities list
+	 * 
+	 * @return void
+	 */
 	public void printWithFirst() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
@@ -382,6 +386,12 @@ public class Board {
 		}
 	}
 
+	/*
+	 * Purpose: print board with * for cells with possibilities list of size
+	 * greater than one
+	 * 
+	 * @return void
+	 */
 	public void printWithUnknowns() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
@@ -412,6 +422,11 @@ public class Board {
 		}
 	}
 
+	/*
+	 * Purpose: print board, showing entire possibilities list for each cell
+	 * 
+	 * @return void
+	 */
 	public void printVerbose() {
 		int count = 0;
 		for (int i = 0; i < 81; i += 9) {
@@ -433,7 +448,6 @@ public class Board {
 			System.out.print(Arrays.toString(this.grid.get(i + 7).possibilities.toArray()));
 			System.out.print(" ");
 			System.out.print(Arrays.toString(this.grid.get(i + 8).possibilities.toArray()));
-			System.out.print(" | ");
 
 			if (count % 3 == 0 && count < 7) {
 				System.out.print("\n---------------------\n");
